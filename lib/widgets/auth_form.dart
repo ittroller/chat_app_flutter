@@ -4,22 +4,29 @@ class AuthForm extends StatefulWidget {
   const AuthForm({
     Key? key,
     required this.submitFn,
+    required this.isLoading,
   }) : super(key: key);
 
   // const AuthForm(this.submitFn);
 
+  final bool isLoading;
   final void Function(
     String email,
     String username,
     String password,
     bool isLogin,
   ) submitFn;
+
   @override
   _AuthFormState createState() => _AuthFormState();
 }
 
 class _AuthFormState extends State<AuthForm> {
   final _formKey = GlobalKey<FormState>();
+
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
   var _isLogin = true;
   var _userEmail = '';
@@ -53,6 +60,7 @@ class _AuthFormState extends State<AuthForm> {
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   TextFormField(
+                    controller: emailController,
                     key: ValueKey('email'),
                     validator: (value) {
                       if (value!.isEmpty || !value.contains('@')) {
@@ -71,6 +79,7 @@ class _AuthFormState extends State<AuthForm> {
                   ),
                   if (!_isLogin)
                     TextFormField(
+                      controller: usernameController,
                       key: ValueKey('username'),
                       validator: (value) {
                         if (value!.isEmpty || value.length < 4) {
@@ -87,6 +96,7 @@ class _AuthFormState extends State<AuthForm> {
                       ),
                     ),
                   TextFormField(
+                    controller: passwordController,
                     key: ValueKey('password'),
                     validator: (value) {
                       if (value!.isEmpty || value.length < 7) {
@@ -105,27 +115,34 @@ class _AuthFormState extends State<AuthForm> {
                     obscureText: true,
                   ),
                   SizedBox(height: 12),
-                  ElevatedButton(
-                    onPressed: _trySubmit,
-                    child: Text(_isLogin ? 'Login' : 'Signup'),
-                    style: ButtonStyle(
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
+                  if (widget.isLoading) CircularProgressIndicator(),
+                  if (!widget.isLoading)
+                    ElevatedButton(
+                      onPressed: _trySubmit,
+                      child: Text(_isLogin ? 'Login' : 'Signup'),
+                      style: ButtonStyle(
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  TextButton(
-                    child: Text(_isLogin
-                        ? 'Create new account'
-                        : 'I already have an account'),
-                    onPressed: () {
-                      setState(() {
-                        _isLogin = !_isLogin;
-                      });
-                    },
-                  )
+                  if (!widget.isLoading)
+                    TextButton(
+                      child: Text(_isLogin
+                          ? 'Create new account'
+                          : 'I already have an account'),
+                      onPressed: () {
+                        setState(() {
+                          _isLogin = !_isLogin;
+                          emailController.clear();
+                          usernameController.clear();
+                          passwordController.clear();
+                        });
+                      },
+                    )
                 ],
               ),
             ),
