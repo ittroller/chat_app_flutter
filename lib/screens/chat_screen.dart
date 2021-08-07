@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import 'package:chat_app/widgets/chat/messsages.dart';
+import 'package:chat_app/widgets/chat/new_message.dart';
+
 class ChatScreen extends StatelessWidget {
   const ChatScreen({Key? key}) : super(key: key);
 
@@ -38,42 +41,23 @@ class ChatScreen extends StatelessWidget {
           )
         ],
       ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('chats/ectVBoIS88rXoBXdjajI/messages')
-            .snapshots(),
-        builder: (ctx, streamSnapshot) {
-          if (streamSnapshot.hasError) {
-            return Center(
-              child: Text(streamSnapshot.error.toString()),
-            );
-          }
-
-          if (!streamSnapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (streamSnapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          final documents = (streamSnapshot.data!).docs;
-          return ListView.builder(
-            itemCount: documents.length,
-            itemBuilder: (ctx, index) => Container(
-              padding: EdgeInsets.all(8),
-              child: Text(documents[index]['text']),
+      body: Container(
+        child: Column(
+          children: <Widget>[
+            Expanded(
+              child: Messages(),
             ),
-          );
-        },
+            NewMessage()
+          ],
+        ),
       ),
-      floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.add),
-          onPressed: () {
-            FirebaseFirestore.instance
-                .collection('chats/ectVBoIS88rXoBXdjajI/messages')
-                .add({'text': 'Message added !'});
-          }),
+      // floatingActionButton: FloatingActionButton(
+      //     child: Icon(Icons.add),
+      //     onPressed: () {
+      //       FirebaseFirestore.instance
+      //           .collection('chats/ectVBoIS88rXoBXdjajI/messages')
+      //           .add({'text': 'Message added !'});
+      //     }),
     );
   }
 }
