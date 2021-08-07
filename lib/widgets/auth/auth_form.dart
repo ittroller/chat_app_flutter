@@ -29,8 +29,8 @@ class _AuthFormState extends State<AuthForm> {
   final TextEditingController passwordController = TextEditingController();
 
   var _isLogin = true;
-  var _userEmail = '';
-  var _userName = '';
+  var _userEmail = 'ittroller8@gmail.com';
+  var _userName = 'Admin@123';
   var _userPassword = '';
 
   void _trySubmit() {
