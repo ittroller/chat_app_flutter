@@ -1,4 +1,5 @@
 import 'package:chat_app/widgets/chat/message_bubble.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -12,42 +13,52 @@ class Messages extends StatelessWidget {
         .orderBy('createdAt', descending: true)
         .snapshots();
 
-    return StreamBuilder(
-      builder: (ctx, AsyncSnapshot<QuerySnapshot> chatSnapshot) {
-        // error
-        if (chatSnapshot.hasError) {
-          ScaffoldMessenger.of(ctx).showSnackBar(
-            SnackBar(
-              content: Text(chatSnapshot.error.toString()),
-              backgroundColor: Theme.of(context).errorColor,
-            ),
-          );
-        }
-        // waiting
-        if (chatSnapshot.connectionState == ConnectionState.waiting) {
+    final User? user = FirebaseAuth.instance.currentUser;
+    return FutureBuilder(
+      future: Future.value(user),
+      builder: (ctx, futureSnapshot) {
+        if (futureSnapshot.connectionState == ConnectionState.waiting) {
           return Center(
             child: CircularProgressIndicator(),
           );
         }
+        return StreamBuilder(
+          builder: (ctx, AsyncSnapshot<QuerySnapshot> chatSnapshot) {
+            // error
+            if (chatSnapshot.hasError) {
+              ScaffoldMessenger.of(ctx).showSnackBar(
+                SnackBar(
+                  content: Text(chatSnapshot.error.toString()),
+                  backgroundColor: Theme.of(context).errorColor,
+                ),
+              );
+            }
+            // waiting
+            if (chatSnapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
 
-        // mapping data
-        // return ListView(
-        //   children: chatSnapshot.data!.docs.map((DocumentSnapshot document) {
-        //     Map<String, dynamic> data =
-        //         document.data()! as Map<String, dynamic>;
-        //     return Text(data['text']);
-        //   }).toList(),
-        // );
-        final chatDocs = chatSnapshot.data!.docs;
-        return ListView.builder(
-          itemBuilder: (ctx, index) => MessageBubble(
-            message: chatDocs[index]['text'],
-          ),
-          itemCount: chatDocs.length,
-          reverse: true,
+            // mapping data
+            final chatDocs = chatSnapshot.data!.docs;
+            return ListView.builder(
+              itemBuilder: (ctx, index) {
+                final DocumentSnapshot docsIndex = chatDocs[index];
+                return MessageBubble(
+                  message: docsIndex['text'],
+                  isMe: docsIndex['userId'] == user!.uid,
+                  userName: docsIndex['username'],
+                  key: ValueKey(docsIndex.id), // this is documentID
+                );
+              },
+              itemCount: chatDocs.length,
+              reverse: true,
+            );
+          },
+          stream: _chatSnapshot,
         );
       },
-      stream: _chatSnapshot,
     );
   }
 }
