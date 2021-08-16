@@ -19,15 +19,22 @@ class _UserImagePickerState extends State<UserImagePicker> {
   File? _image;
 
   void _pickImageFunc() async {
-    final XFile? imageFile =
-        await _picker.pickImage(source: ImageSource.camera);
+    final XFile? imageFile = await _picker.pickImage(
+      source: ImageSource.camera,
+      imageQuality: 50,
+      maxWidth: 150,
+    );
 
     setState(() {
-      print(imageFile);
       if (imageFile != null) {
         _image = File(imageFile.path);
       } else {
-        print('error');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error when pick image.'),
+            backgroundColor: Theme.of(context).errorColor,
+          ),
+        );
       }
     });
 

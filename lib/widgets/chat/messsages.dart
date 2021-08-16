@@ -49,6 +49,7 @@ class Messages extends StatelessWidget {
                   message: docsIndex['text'],
                   isMe: docsIndex['userId'] == user!.uid,
                   userName: docsIndex['username'],
+                  userImage: docsIndex['userImage'],
                   key: ValueKey(docsIndex.id), // this is documentID
                 );
               },
