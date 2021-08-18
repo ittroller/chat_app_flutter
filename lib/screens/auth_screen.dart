@@ -22,7 +22,7 @@ class _AuthScreenState extends State<AuthScreen> {
     String email,
     String username,
     String password,
-    File image,
+    File? image,
     bool isLogin,
   ) async {
     UserCredential authResult;
@@ -47,7 +47,7 @@ class _AuthScreenState extends State<AuthScreen> {
             .child('user_image')
             .child(authResult.user!.uid + '.jpg');
 
-        await ref.putFile(image);
+        await ref.putFile(image!);
         final url = await ref.getDownloadURL();
 
         await FirebaseFirestore.instance
