@@ -46,10 +46,10 @@ class Messages extends StatelessWidget {
               itemBuilder: (ctx, index) {
                 final DocumentSnapshot docsIndex = chatDocs[index];
                 return MessageBubble(
-                  message: docsIndex['text'],
-                  isMe: docsIndex['userId'] == user!.uid,
-                  userName: docsIndex['username'],
-                  userImage: docsIndex['userImage'],
+                  message: docsIndex.get('text'),
+                  isMe: docsIndex.get('userId') == user!.uid,
+                  userName: docsIndex.get('username'),
+                  userImage: docsIndex.get('userImage'),
                   key: ValueKey(docsIndex.id), // this is documentID
                 );
               },
