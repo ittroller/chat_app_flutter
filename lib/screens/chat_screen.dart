@@ -18,8 +18,17 @@ class _ChatScreenState extends State<ChatScreen> {
   void initState() {
     final fbm = FirebaseMessaging.instance;
     fbm.requestPermission();
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {});
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {});
+    fbm.getInitialMessage();
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print('111111');
+      print(message.notification!.title);
+      print(message.notification!.body);
+    });
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      print('222222');
+      print(message.notification!.title);
+      print(message.notification!.body);
+    });
     super.initState();
   }
 
